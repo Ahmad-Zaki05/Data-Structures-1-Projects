@@ -10,13 +10,21 @@ typedef struct {
     node *head;
 } Stack;
 
-Stack *constStack () {
+// PART 1 (stack functions)
+Stack* initialize ();
+float pop (Stack *s);
+void push (Stack *s, float value);
+float peek (Stack *s);
+int isEmpty (Stack *s);
+
+
+Stack* initialize () {
     Stack *s = malloc(sizeof(Stack));
     s->head = NULL;
     return s;
 }
 
-node *constNode (float data) {
+node* constNode (float data) {
     node *n = malloc(sizeof(node));
     n->data = data;
     n->next = NULL;
@@ -43,8 +51,8 @@ void deconStack (Stack *s) {
     free(s);
 }
 
-void push (Stack *s, float data) {
-    node *n = constNode(data);
+void push (Stack *s, float value) {
+    node *n = constNode(value);
     if (s->head == NULL) {
         s->head = n;
         return ;
@@ -57,14 +65,16 @@ int isEmpty (Stack *s) {
     return (s->head == NULL);
 }
 
-void pop (Stack *s) {
+float pop (Stack *s) {
     if (isEmpty(s)) {
         printf("Stack is already empty\n");
-        return ;
+        return -10000;
     }
     node *n = s->head;
     s->head = s->head->next;
+    float value = n->data;
     free(n);
+    return value;
 }
 
 float peek (Stack *s) {
