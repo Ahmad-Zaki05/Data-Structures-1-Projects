@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 typedef struct node node;
 struct node {
     float data;
-     node *next;
+    node *next;
 };
 
 typedef struct {
@@ -25,6 +26,30 @@ char* infixTopostfix (char *infix);
 int priority(char c);
 int isNum(char *str);
 
+
+// PART 3: Postfix Expression Evaluation
+float calculate (float opand1, char oper, float opand2);
+float evaluatePostfix (char *postfix);
+
+int main()
+{
+    printf("Please make sure that there is a space before and after each operator and operand\n");
+    printf("Negative numbers should be written with the negative sign concatenated with the number itself, for example: -13.25\n");
+    printf("Enter the mathematical expression: ");
+
+    char infix[1000];
+    fgets(infix, 1000, stdin);
+
+    infix[strlen(infix) - 1] = '\0'; // removes newline character from string
+
+    char *post = infixTopostfix(infix);
+
+    printf("%s\n", post);
+
+    printf("%f", evaluatePostfix(post));
+
+    return 0;
+}
 
 Stack* initialize () {
     Stack *s = malloc(sizeof(Stack));
@@ -127,22 +152,22 @@ char* infixTopostfix (char *infix) {
     char *post = malloc(strlen(infix)+1);
     int j = 0;
     char *token = strtok(infix, " ");
-    while(token != NULL) 
+    while(token != NULL)
     {
-       if (isNum(token))
-       {
+        if (isNum(token))
+        {
             strcpy(post + j*sizeof(char), token);
             j += strlen(token);
             post[j++] = ' ';
-       }
+        }
         else if (isEmpty(s))
             push(s, (float)(token[0]));
         else if (token[0] == ')')
         {
             while (!isEmpty(s) && (char)(peek(s)) != '(')
             {
-                post[j++] = (char)(pop(s));
-                post[j++] = ' ';
+            post[j++] = (char)(pop(s));
+            post[j++] = ' ';
             }
             pop(s);
         }
@@ -157,7 +182,7 @@ char* infixTopostfix (char *infix) {
         }
         token = strtok(NULL, " ");
     }
-    while(!isEmpty(s)) 
+    while(!isEmpty(s))
     {
         post[j++] = (char)(pop(s));
         if(!isEmpty(s))
@@ -173,19 +198,35 @@ int isNum(char *str) {
     float num = strtof(str, &endptr);
     if (endptr == str)
         return 0;
-    else 
+    else
         return 1;
 }
 
+float calculate (float opand1, char oper, float opand2) {
+    if (oper == '+') return opand1 + opand2;
+    if (oper == '-') return opand1 - opand2;
+    if (oper == '*') return opand1 * opand2;
+    if (oper == '/') return opand1 / opand2;
+    if (oper == '^') return pow(opand1, opand2);
+}
 
-
-int main()
-{
-    char infix[] = "2 + ( -2.5 + 3.14 ) * ( -5.4 + 8.1 ) ^ ( -0.5 )";
-
-    char *post = infixTopostfix(infix);
-
-    printf("%s", post);
-
-    return 0;
+float evaluatePostfix (char *postfix) {
+    Stack *s = initialize();
+    int j = 0;
+    char *token = strtok(postfix, " ");
+    while(token != NULL)
+    {
+        if (isNum(token)) {
+            push(s, strtof(token, NULL));
+        }
+        else {
+            float opand2 = pop(s);
+            float opand1 = pop(s);
+            push(s, calculate(opand1, token[0], opand2));
+        }
+        token = strtok(NULL, " ");
+    }
+    float ans = pop(s);
+    deconStack(s);
+    return ans;
 }
