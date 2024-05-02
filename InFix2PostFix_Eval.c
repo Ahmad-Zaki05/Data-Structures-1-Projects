@@ -35,18 +35,19 @@ int main()
 {
     printf("Please make sure that there is a space before and after each operator and operand\n");
     printf("Negative numbers should be written with the negative sign concatenated with the number itself, for example: -13.25\n");
-    printf("Enter the mathematical expression: ");
+    printf("Enter the mathematical expression below.\n");
 
     char infix[1000];
+    printf("\nInput (Infix): ");
     fgets(infix, 1000, stdin);
 
     infix[strlen(infix) - 1] = '\0'; // removes newline character from string
 
     char *post = infixTopostfix(infix);
 
-    printf("%s\n", post);
+    printf("Output (Postfix): %s\n", post);
 
-    printf("%f", evaluatePostfix(post));
+    printf("Value: %f", evaluatePostfix(post));
 
     return 0;
 }
