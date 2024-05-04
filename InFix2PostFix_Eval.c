@@ -167,19 +167,22 @@ char* infixTopostfix (char *infix) {
         {
             while (!isEmpty(s) && (char)(peek(s)) != '(')
             {
-            post[j++] = (char)(pop(s));
-            post[j++] = ' ';
+                post[j++] = (char)(pop(s));
+                post[j++] = ' ';
             }
             pop(s);
         }
         else
         {
-            while (!isEmpty(s) && priority((char)(peek(s))) >= priority(token[0]) && token[0] != '(')
-            {
-                post[j++] = (char)(pop(s));
-                post[j++] = ' ';
+            if ((char)peek(s) == '^' && token[0] == '^') push(s, (float)token[0]);
+            else {
+                while (!isEmpty(s) && priority((char)(peek(s))) >= priority(token[0]) && token[0] != '(')
+                {
+                    post[j++] = (char)(pop(s));
+                    post[j++] = ' ';
+                }
+                push(s, (float)(token[0]));
             }
-            push(s, (float)(token[0]));
         }
         token = strtok(NULL, " ");
     }
@@ -208,6 +211,7 @@ float calculate (float opand1, char oper, float opand2) {
     if (oper == '-') return opand1 - opand2;
     if (oper == '*') return opand1 * opand2;
     if (oper == '/') return opand1 / opand2;
+    if (oper == '%') return fmod(opand1, opand2);
     if (oper == '^') return pow(opand1, opand2);
 }
 
@@ -223,6 +227,7 @@ float evaluatePostfix (char *postfix) {
         else {
             float opand2 = pop(s);
             float opand1 = pop(s);
+            // printf("%f %c %f = %f\n", opand1, token[0], opand2, calculate(opand1, token[0], opand2));
             push(s, calculate(opand1, token[0], opand2));
         }
         token = strtok(NULL, " ");
