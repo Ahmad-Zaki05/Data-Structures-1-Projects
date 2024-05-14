@@ -10,8 +10,6 @@ typedef struct node {
     struct node *left, *right;
 }node;
 
-node *dictionary = NULL;
-
 //BASIC FUNCTIONS
 node *constNode (char* data);
 void deconNode (node *root);
@@ -20,21 +18,25 @@ node *searchNode (node *root, char* word);
 void printInOrder (node *root);
 
 //MAIN FUNCTIONS
-void loadDictionary ();
-void checkSentence (char* str);
+node *loadDictionary (node *dictionary);
+void checkSentence (node *dictionary, char* str);
+char *getlast (node *dictionary, char *word);
+char *getInorderPre (node *dictionary, char *word);
+char *getInorderSucc (node *dictionary, char *word);
 
-
-int main () 
+int main ()
 {
-    loadDictionary();
+    node *dictionary = NULL;
+
+    dictionary = loadDictionary(dictionary);
 
     printf("Enter a sentence: ");
     char sentence[100];
     fgets(sentence, sizeof(sentence), stdin);
-    sentence[strlen(sentence)-1] = '\0'; //remove '\n'
+    sentence[strlen(sentence) - 1] = '\0'; //remove '\n'
 
-    checkSentence(sentence);
-    
+    checkSentence(dictionary, sentence);
+
     //printInOrder(dictionary);
     deconNode(dictionary);
 
@@ -66,7 +68,7 @@ node *insertNode (node *root, char* word) {
 }
 
 node *searchNode (node *root, char* word) {
-    if (root == NULL|| strcasecmp(root->data, word) == 0) return root;
+    if (root == NULL || strcasecmp(root->data, word) == 0) return root;
     if (strcasecmp(root->data, word) > 0) return searchNode(root->left, word);
     if (strcasecmp(root->data, word) < 0) return searchNode(root->right, word);
 }
@@ -78,7 +80,7 @@ void printInOrder (node *root) {
     printInOrder(root->right);
 }
 
-void loadDictionary () {
+node *loadDictionary (node *dictionary) {
     FILE *f = fopen("Dictionary.txt", "r");
     if (!f)
     {
@@ -90,18 +92,19 @@ void loadDictionary () {
     int count = 0;
     rewind(f);
     while(fgets(record, sizeof(record), f))
-    {   
+    {
         record[strlen(record)-1] = '\0'; //remove '\n'
         dictionary = insertNode(dictionary, record);
         count++;
     }
-            
+
     printf("\n.................................\nDictionary Loaded Succesfully...!\n.................................\n");
     printf("Size: %d\n.................................\n", count);
     fclose(f);
+    return dictionary;
 }
 
-void checkSentence (char* str) {
+void checkSentence (node *dictionary, char* str) {
     char* token = strtok(str, " ");
     while (token != NULL)
     {
@@ -109,10 +112,19 @@ void checkSentence (char* str) {
             printf("%s - CORRECT\n", token);
         else
         {
-            printf(("%s - INCORRECT, Suggestions: ")); 
+            printf(("%s - INCORRECT, Suggestions: "));
             //call suggestions function
+            char *nearest = getlast(dictionary, token);
+            printf("%s ", nearest);
             printf("\n");
         }
         token = strtok(NULL, " ");
     }
-}    
+}
+
+char *getlast (node *dictionary, char *word) {
+    if (dictionary == NULL) return NULL;
+    if (strcasecmp(dictionary->data, word) > 0 && dictionary->left != NULL) return getlast(dictionary->left, word);
+    if (strcasecmp(dictionary->data, word) < 0 && dictionary->right != NULL) return getlast(dictionary->right, word);
+    return dictionary->data;
+}
