@@ -19,8 +19,9 @@ void printInOrder (node *root);
 
 //MAIN FUNCTIONS
 node *loadDictionary (node *dictionary);
+int getHeight(node* node);
 void checkSentence (node *dictionary, char* str);
-char *getlast (node *dictionary, char *word);
+char *getLast (node *dictionary, char *word);
 char *getInorderPre (node *dictionary, char *word);
 char *getInorderSucc (node *dictionary, char *word);
 
@@ -100,6 +101,7 @@ node *loadDictionary (node *dictionary) {
 
     printf("\n.................................\nDictionary Loaded Succesfully...!\n.................................\n");
     printf("Size: %d\n.................................\n", count);
+    printf("Height: %d\n.................................\n", getHeight(dictionary));
     fclose(f);
     return dictionary;
 }
@@ -114,7 +116,7 @@ void checkSentence (node *dictionary, char* str) {
         {
             printf(("%s - INCORRECT, Suggestions: "));
             //call suggestions function
-            char *nearest = getlast(dictionary, token);
+            char *nearest = getLast(dictionary, token);
             printf("%s ", nearest);
             printf("\n");
         }
@@ -122,9 +124,21 @@ void checkSentence (node *dictionary, char* str) {
     }
 }
 
-char *getlast (node *dictionary, char *word) {
+char *getLast (node *dictionary, char *word) {
     if (dictionary == NULL) return NULL;
-    if (strcasecmp(dictionary->data, word) > 0 && dictionary->left != NULL) return getlast(dictionary->left, word);
-    if (strcasecmp(dictionary->data, word) < 0 && dictionary->right != NULL) return getlast(dictionary->right, word);
+    if (strcasecmp(dictionary->data, word) > 0 && dictionary->left != NULL) return getLast(dictionary->left, word);
+    if (strcasecmp(dictionary->data, word) < 0 && dictionary->right != NULL) return getLast(dictionary->right, word);
     return dictionary->data;
+}
+
+int getHeight(node* node)
+{
+    if(node == NULL)
+        return 0;
+    else
+    {
+        int l = 1+getHeight(node->left);
+        int r = 1+getHeight(node->right);
+        return l>r ? l:r;
+    }
 }
