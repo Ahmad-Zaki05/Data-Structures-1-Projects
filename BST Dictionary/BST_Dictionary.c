@@ -21,9 +21,9 @@ void printInOrder (node *root);
 node *loadDictionary (node *dictionary);
 int getHeight(node* node);
 void checkSentence (node *dictionary, char* str);
-char *getLast (node *dictionary, char *word);
-char *getInorderPre (node *dictionary, char *word);
-char *getInorderSucc (node *dictionary, char *word);
+node *getLast (node *dictionary, char *word);
+node *getInorderPre (node *dictionary, node* last);
+node *getInorderSucc (node *dictionary, node* last);
 node *findMin (node *root);
 node *findMax (node *root);
 
@@ -118,19 +118,21 @@ void checkSentence (node *dictionary, char* str) {
         {
             printf(("%s - INCORRECT, Suggestions: "));
             //call suggestions function
-            char *nearest = getLast(dictionary, token);
-            printf("%s ", nearest);
+            node *last = getLast(dictionary, token);
+            printf("%s ", last->data);
+            printf("%s ", getInorderSucc(dictionary, last)->data);
+            //printf("%s ", getInorderPre(dictionary, last)->data);
             printf("\n");
         }
         token = strtok(NULL, " ");
     }
 }
 
-char *getLast (node *dictionary, char *word) {
+node *getLast (node *dictionary, char *word) {
     if (dictionary == NULL) return NULL;
     if (strcasecmp(dictionary->data, word) > 0 && dictionary->left != NULL) return getLast(dictionary->left, word);
     if (strcasecmp(dictionary->data, word) < 0 && dictionary->right != NULL) return getLast(dictionary->right, word);
-    return dictionary->data;
+    return dictionary;
 }
 
 int getHeight(node* node)
@@ -153,4 +155,28 @@ node *findMin (node *root) {
 node *findMax (node *root) {
     if (root == NULL || root->right == NULL) return root;
     return findMin(root->right);
+}
+
+node *getInorderSucc (node *dictionary, node* last) {
+    if (dictionary == NULL || last == NULL) return NULL;
+    //case 1: node has right side
+    if (last->right)
+        return findMin(last->right);
+    //case 1: node doesnt have right side
+    else
+    {
+        node *successor = NULL;
+        node *ancesstor = dictionary;
+        while (ancesstor != last)
+        {
+            if (strcasecmp(ancesstor->data, last->data) > 0)
+            {
+                successor = ancesstor;
+                ancesstor = ancesstor->left;
+            }
+            else
+                ancesstor = ancesstor->right;
+        }
+        return successor;
+    }
 }
