@@ -24,6 +24,8 @@ void checkSentence (node *dictionary, char* str);
 char *getLast (node *dictionary, char *word);
 char *getInorderPre (node *dictionary, char *word);
 char *getInorderSucc (node *dictionary, char *word);
+node *findMin (node *root);
+node *findMax (node *root);
 
 int main ()
 {
@@ -141,4 +143,14 @@ int getHeight(node* node)
         int r = 1+getHeight(node->right);
         return l>r ? l:r;
     }
+}
+
+node *findMin (node *root) {
+    if (root == NULL || root->left == NULL) return root;
+    return findMin(root->left);
+}
+
+node *findMax (node *root) {
+    if (root == NULL || root->right == NULL) return root;
+    return findMin(root->right);
 }
