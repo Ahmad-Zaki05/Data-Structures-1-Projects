@@ -121,7 +121,7 @@ void checkSentence (node *dictionary, char* str) {
             node *last = getLast(dictionary, token);
             printf("%s ", last->data);
             printf("%s ", getInorderSucc(dictionary, last)->data);
-            //printf("%s ", getInorderPre(dictionary, last)->data);
+            printf("%s", getInorderPre(dictionary, last)->data);
             printf("\n");
         }
         token = strtok(NULL, " ");
@@ -179,4 +179,18 @@ node *getInorderSucc (node *dictionary, node* last) {
         }
         return successor;
     }
+}
+
+node *getInorderPre (node *dictionary, node *last) {
+    if (dictionary == NULL || last == NULL) return NULL;
+    if (last->left != NULL) return findMax(last->left);
+    node *prev = NULL, *current = dictionary;
+    while (current != last) {
+        if (strcasecmp(last->data, current->data) > 0) {
+            prev = current;
+            current = current->right;
+        }
+        else current = current->left;
+    }
+    return prev;
 }
