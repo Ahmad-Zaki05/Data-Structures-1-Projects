@@ -101,7 +101,7 @@ node *loadDictionary (node *dictionary) {
         count++;
     }
 
-    printf("\n.................................\nDictionary Loaded Succesfully...!\n.................................\n");
+    printf("\n.................................\nDictionary Loaded Successfully...!\n.................................\n");
     printf("Size: %d\n.................................\n", count);
     printf("Height: %d\n.................................\n", getHeight(dictionary));
     fclose(f);
@@ -138,7 +138,7 @@ node *getLast (node *dictionary, char *word) {
 int getHeight(node* node)
 {
     if(node == NULL)
-        return 0;
+        return -1;
     else
     {
         int l = 1+getHeight(node->left);
@@ -154,7 +154,7 @@ node *findMin (node *root) {
 
 node *findMax (node *root) {
     if (root == NULL || root->right == NULL) return root;
-    return findMin(root->right);
+    return findMax(root->right);
 }
 
 node *getInorderSucc (node *dictionary, node* last) {
