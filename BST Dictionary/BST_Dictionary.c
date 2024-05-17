@@ -120,8 +120,12 @@ void checkSentence (node *dictionary, char* str) {
             //call suggestions function
             node *last = getLast(dictionary, token);
             printf("%s ", last->data);
-            printf("%s ", getInorderSucc(dictionary, last)->data);
-            printf("%s", getInorderPre(dictionary, last)->data);
+            node *suggest = getInorderSucc(dictionary, last);
+            if (suggest) printf("%s ", suggest->data);
+            else printf("No Successor ");
+            suggest = getInorderPre(dictionary, last);
+            if (suggest) printf("%s", suggest->data);
+            else printf("No predecessor");
             printf("\n");
         }
         token = strtok(NULL, " ");
